@@ -86,3 +86,62 @@ nav { position: relative; }
 .search-item:hover { background-color: #f8fafc; }
 .search-item strong { color: #3498db; background-color: #e0f2fe; padding: 0 2px; border-radius: 2px; }
 .search-item-sub { font-size: 11px; color: #718096; }
+
+
+/* Navigation Flexbox Alignment */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Action Buttons */
+.btn-tool {
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid #cbd5e0;
+    background-color: #ffffff;
+    color: #2d3748;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.btn-tool:hover { background-color: #f1f5f9; }
+.btn-tool-export { border-color: #3182ce; color: #2b6cb0; }
+.btn-tool-import { border-color: #38a169; color: #276749; }
+
+/* Import Modal Window */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 380px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}

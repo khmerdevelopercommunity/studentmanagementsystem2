@@ -9,24 +9,65 @@
 
 <h1>Primary School Management System (Grades 1-6)</h1>
 
-<nav>
-    <a href="index.php">Dashboard</a>
-    <a href="teachers.php">1. Teachers</a>
-    <a href="subjects.php">2. Subjects</a>
-    <a href="classes.php">3. Classes</a>
-    <a href="students.php">4. Students</a>
-    <a href="enroll.php">5. Enrollments</a>
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'import_success'): ?>
+    <div style="background: #c6f6d5; color: #22543d; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+        Database imported successfully!
+    </div>
+<?php elseif (isset($_GET['msg']) && $_GET['msg'] === 'import_error'): ?>
+    <div style="background: #fed7d7; color: #742a2a; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+        Import failed! Please check your .sql file.
+    </div>
+<?php endif; ?>
 
-    <div class="search-container">
-        <form action="search.php" method="GET" class="search-form" style="margin: 0; padding: 0; background: none; border: none; box-shadow: none;">
-            <input type="text" id="live-search-input" name="q" placeholder="Search..." autocomplete="off" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" required>
-            <button type="submit">Search</button>
-        </form>
-        <div id="live-search-results"></div>
+<nav>
+    <div class="nav-links">
+        <a href="index.php">Dashboard</a>
+        <a href="teachers.php">1. Teachers</a>
+        <a href="subjects.php">2. Subjects</a>
+        <a href="classes.php">3. Classes</a>
+        <a href="students.php">4. Students</a>
+        <a href="enroll.php">5. Enrollments</a>
+    </div>
+
+    <div class="header-tools">
+        <div class="search-container">
+            <form action="search.php" method="GET" class="search-form" style="margin:0; padding:0; background:none; border:none; box-shadow:none;">
+                <input type="text" id="live-search-input" name="q" placeholder="Search..." autocomplete="off" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" required>
+                <button type="submit">Search</button>
+            </form>
+            <div id="live-search-results"></div>
+        </div>
+
+        <a href="db_tools.php?action=export_schema" class="btn-tool btn-tool-export" title="Export Structure Only">Export Schema</a>
+        <a href="db_tools.php?action=export_data" class="btn-tool btn-tool-export" title="Export Rows Only">Export Data</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal()">Import Data</button>
     </div>
 </nav>
 
+<div id="importModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Import SQL File</h3>
+        <p style="font-size: 12px; color: #718096;">Select a <code>.sql</code> file to restore structure or data:</p>
+        <form action="db_tools.php?action=import" method="POST" enctype="multipart/form-data">
+            <input type="file" name="sql_file" accept=".sql" required style="margin-bottom: 15px; width: 100%;">
+            <div style="text-align: right;">
+                <button type="button" onclick="closeImportModal()" class="btn-tool">Cancel</button>
+                <button type="submit" class="btn-tool btn-tool-import">Upload & Import</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+function openImportModal() {
+    document.getElementById('importModal').style.display = 'flex';
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').style.display = 'none';
+}
+
+// Live Search Dropdown Logic
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('live-search-input');
     const resultsBox = document.getElementById('live-search-results');
@@ -54,49 +95,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 let html = '';
                 let totalFound = 0;
 
-                // 1. Teachers
                 if (data.teachers && data.teachers.length > 0) {
                     html += '<div class="search-group-title">Teachers</div>';
                     data.teachers.forEach(item => {
                         totalFound++;
-                        html += `<a class="search-item" href="teachers.php?edit=${item.teacher_id}">
-                                    <div>${highlightText(item.title, query)}</div>
-                                    <div class="search-item-sub">${item.sub || ''}</div>
-                                 </a>`;
+                        html += `<a class="search-item" href="teachers.php?edit=${item.teacher_id}"><div>${highlightText(item.title, query)}</div></a>`;
                     });
                 }
-
-                // 2. Subjects
                 if (data.subjects && data.subjects.length > 0) {
                     html += '<div class="search-group-title">Subjects</div>';
                     data.subjects.forEach(item => {
                         totalFound++;
-                        html += `<a class="search-item" href="subjects.php?edit=${item.subject_id}">
-                                    <div>${highlightText(item.title, query)}</div>
-                                 </a>`;
+                        html += `<a class="search-item" href="subjects.php?edit=${item.subject_id}"><div>${highlightText(item.title, query)}</div></a>`;
                     });
                 }
-
-                // 3. Classes
                 if (data.classes && data.classes.length > 0) {
                     html += '<div class="search-group-title">Classes</div>';
                     data.classes.forEach(item => {
                         totalFound++;
-                        html += `<a class="search-item" href="classes.php?edit=${item.class_id}">
-                                    <div>${highlightText(item.title, query)}</div>
-                                    <div class="search-item-sub">${item.sub || ''}</div>
-                                 </a>`;
+                        html += `<a class="search-item" href="classes.php?edit=${item.class_id}"><div>${highlightText(item.title, query)}</div></a>`;
                     });
                 }
-
-                // 4. Students
                 if (data.students && data.students.length > 0) {
                     html += '<div class="search-group-title">Students</div>';
                     data.students.forEach(item => {
                         totalFound++;
-                        html += `<a class="search-item" href="students.php?edit=${item.student_id}">
-                                    <div>${highlightText(item.title, query)}</div>
-                                 </a>`;
+                        html += `<a class="search-item" href="students.php?edit=${item.student_id}"><div>${highlightText(item.title, query)}</div></a>`;
                     });
                 }
 
@@ -110,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Hide dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
             resultsBox.style.display = 'none';

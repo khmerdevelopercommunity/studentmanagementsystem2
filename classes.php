@@ -1,48 +1,46 @@
 <?php
-// 1. Connect to Database
 require_once 'db.php';
 
-// 2. Handle Form Actions (Add / Edit / Delete)
-if (isset($_POST['save_class'])) {$grade_level  = $_POST['grade_level'];$section      = $_POST['section'];$academic_yr  = $_POST['academic_year'];$teacher_id   = !empty($_POST['homeroom_teacher_id']) ?$_POST['homeroom_teacher_id'] : null;
-    $id           =$_POST['class_id'] ?? null;
+if (isset($_POST['save_class'])) {
+    $grade_level  = $_POST['grade_level'];
+    $section      = $_POST['section'];
+    $academic_yr  = $_POST['academic_year'];
+    $teacher_id   = !empty($_POST['homeroom_teacher_id']) ? $_POST['homeroom_teacher_id'] : null;
+    $id           = $_POST['class_id'] ?? null;
 
     if ($id) {
-        $stmt =$pdo->prepare("UPDATE classes SET grade_level=?, section=?, academic_year=?, homeroom_teacher_id=? WHERE class_id=?");
-        $stmt->execute([$grade_level, $section,$academic_yr, $teacher_id,$id]);
+        $stmt = $pdo->prepare("UPDATE classes SET grade_level=?, section=?, academic_year=?, homeroom_teacher_id=? WHERE class_id=?");
+        $stmt->execute([$grade_level, $section, $academic_yr, $teacher_id, $id]);
     } else {
-        $stmt =$pdo->prepare("INSERT INTO classes (grade_level, section, academic_year, homeroom_teacher_id) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$grade_level,$section, $academic_yr,$teacher_id]);
+        $stmt = $pdo->prepare("INSERT INTO classes (grade_level, section, academic_year, homeroom_teacher_id) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$grade_level, $section, $academic_yr, $teacher_id]);
     }
     header("Location: classes.php");
     exit;
 }
 
 if (isset($_GET['delete'])) {
-    $stmt =$pdo->prepare("DELETE FROM classes WHERE class_id = ?");
+    $stmt = $pdo->prepare("DELETE FROM classes WHERE class_id = ?");
     $stmt->execute([$_GET['delete']]);
     header("Location: classes.php");
     exit;
 }
 
-// 3. Fetch Data from Database
-$edit_class = isset($_GET['edit']) ?$pdo->prepare("SELECT * FROM classes WHERE class_id = ?") : null;
+$edit_class = isset($_GET['edit']) ? $pdo->prepare("SELECT * FROM classes WHERE class_id = ?") : null;
 if ($edit_class) { 
     $edit_class->execute([$_GET['edit']]); 
-    $edit_class =$edit_class->fetch(); 
+    $edit_class = $edit_class->fetch(); 
 }
 
-$teachers =$pdo->query("SELECT * FROM teachers ORDER BY first_name ASC")->fetchAll();
-$classes  =$pdo->query("
+$teachers = $pdo->query("SELECT * FROM teachers ORDER BY first_name ASC")->fetchAll();
+$classes  = $pdo->query("
     SELECT c.*, CONCAT(t.first_name, ' ', t.last_name) AS teacher_name 
     FROM classes c 
     LEFT JOIN teachers t ON c.homeroom_teacher_id = t.teacher_id 
     ORDER BY c.class_id DESC
 ")->fetchAll();
 
-// ----------------------------------------------------------------------------
-// 4. INCLUDE THE HEADER HERE (Navigation + Live Search Bar)
-// ----------------------------------------------------------------------------
-include 'header.php'; 
+include 'header.php';
 ?>
 
 <h2>Step 3: Classes Management (Grades 1 to 6)</h2>
@@ -59,9 +57,7 @@ include 'header.php';
         <select name="grade_level" required>
             <option value="">-- Select Grade --</option>
             <?php for ($g = 1; $g <= 6; $g++): ?>
-                <option value="<?= $g ?>" <?= (isset($edit_class['grade_level']) && $edit_class['grade_level'] ==$g) ? 'selected' : '' ?>>
-                    Grade <?= $g ?>
-                </option>
+                <option value="<?= $g ?>" <?= (isset($edit_class['grade_level']) && $edit_class['grade_level'] == $g) ? 'selected' : '' ?>>Grade <?= $g ?></option>
             <?php endfor; ?>
         </select>
     </p>
@@ -80,9 +76,9 @@ include 'header.php';
         <label>Homeroom Teacher:</label>
         <select name="homeroom_teacher_id">
             <option value="">-- Assign Homeroom Teacher --</option>
-            <?php foreach ($teachers as$t): ?>
-                <option value="<?= $t['teacher_id'] ?>" <?= (isset($edit_class['homeroom_teacher_id']) && $edit_class['homeroom_teacher_id'] ==$t['teacher_id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($t['first_name'] . ' ' .$t['last_name']) ?>
+            <?php foreach ($teachers as $t): ?>
+                <option value="<?= $t['teacher_id'] ?>" <?= (isset($edit_class['homeroom_teacher_id']) && $edit_class['homeroom_teacher_id'] == $t['teacher_id']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($t['first_name'] . ' ' . $t['last_name']) ?>
                 </option>
             <?php endforeach; ?>
         </select>
@@ -93,19 +89,22 @@ include 'header.php';
     </p>
 </form>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+    <h3>Classes List</h3>
+    <div style="display: flex; gap: 6px;">
+        <a href="db_tools.php?action=export_data&table=classes" class="btn-tool btn-tool-export">export class</a>
+        <a href="db_tools.php?action=export_data&table=all" class="btn-tool btn-tool-export">export all fields</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import Classes Data', 'classes')">import class</button>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import All Database Data', 'all')">import all fields</button>
+    </div>
+</div>
+
 <table>
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Grade</th>
-            <th>Section</th>
-            <th>Academic Year</th>
-            <th>Homeroom Teacher</th>
-            <th>Actions</th>
-        </tr>
+        <tr><th>ID</th><th>Grade</th><th>Section</th><th>Academic Year</th><th>Homeroom Teacher</th><th>Actions</th></tr>
     </thead>
     <tbody>
-        <?php foreach ($classes as$c): ?>
+        <?php foreach ($classes as $c): ?>
             <tr>
                 <td><?= $c['class_id'] ?></td>
                 <td>Grade <?= $c['grade_level'] ?></td>

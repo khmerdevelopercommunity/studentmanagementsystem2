@@ -1,10 +1,5 @@
 <?php
-// 1. Connect to Database
 require_once 'db.php';
-
-// ============================================================================
-// 2. BACKEND HANDLERS (Create, Update, Delete)
-// ============================================================================
 
 // Save or Update Enrollment
 if (isset($_POST['save_enrollment'])) {
@@ -13,11 +8,9 @@ if (isset($_POST['save_enrollment'])) {
     $id         = $_POST['enrollment_id'] ?? null;
 
     if ($id) {
-        // Update existing enrollment
         $stmt = $pdo->prepare("UPDATE enrollments SET student_id=?, class_id=? WHERE enrollment_id=?");
         $stmt->execute([$student_id, $class_id, $id]);
     } else {
-        // Prevent duplicate enrollment for new entries
         $check = $pdo->prepare("SELECT * FROM enrollments WHERE student_id = ? AND class_id = ?");
         $check->execute([$student_id, $class_id]);
 
@@ -40,24 +33,15 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ============================================================================
-// 3. FETCH DATA
-// ============================================================================
-
-// Fetch enrollment details if editing
+// Fetch edit data
 $edit_enrollment = isset($_GET['edit']) ? $pdo->prepare("SELECT * FROM enrollments WHERE enrollment_id = ?") : null;
 if ($edit_enrollment) { 
     $edit_enrollment->execute([$_GET['edit']]); 
     $edit_enrollment = $edit_enrollment->fetch(); 
 }
 
-// Fetch Students list for dropdown
 $students = $pdo->query("SELECT * FROM students ORDER BY first_name ASC")->fetchAll();
-
-// Fetch Classes list for dropdown
 $classes  = $pdo->query("SELECT * FROM classes ORDER BY grade_level ASC, section ASC")->fetchAll();
-
-// Fetch existing Enrollments with JOINs
 $enrollments = $pdo->query("
     SELECT e.enrollment_id, e.student_id, e.class_id, CONCAT(s.first_name, ' ', s.last_name) AS student_name, c.grade_level, c.section, c.academic_year
     FROM enrollments e
@@ -66,9 +50,6 @@ $enrollments = $pdo->query("
     ORDER BY e.enrollment_id DESC
 ")->fetchAll();
 
-// ----------------------------------------------------------------------------
-// 4. INCLUDE THE HEADER
-// ----------------------------------------------------------------------------
 include 'header.php';
 ?>
 
@@ -113,17 +94,19 @@ include 'header.php';
     </p>
 </form>
 
-<h3>Current Enrollments</h3>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+    <h3>Current Enrollments</h3>
+    <div style="display: flex; gap: 6px;">
+        <a href="db_tools.php?action=export_data&table=enrollments" class="btn-tool btn-tool-export">export enroll</a>
+        <a href="db_tools.php?action=export_data&table=all" class="btn-tool btn-tool-export">export all fields</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import Enrollments Data', 'enrollments')">import enroll</button>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import All Database Data', 'all')">import all fields</button>
+    </div>
+</div>
 
 <table>
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Student Name</th>
-            <th>Class Assigned</th>
-            <th>Academic Year</th>
-            <th>Actions</th>
-        </tr>
+        <tr><th>ID</th><th>Student Name</th><th>Class Assigned</th><th>Academic Year</th><th>Actions</th></tr>
     </thead>
     <tbody>
         <?php if (count($enrollments) > 0): ?>
@@ -140,9 +123,7 @@ include 'header.php';
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
-            <tr>
-                <td colspan="5">No enrollments found. Select a student and a class above to create one.</td>
-            </tr>
+            <tr><td colspan="5">No enrollments found.</td></tr>
         <?php endif; ?>
     </tbody>
 </table>

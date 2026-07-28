@@ -1,12 +1,6 @@
 <?php
-// 1. Connect to Database
 require_once 'db.php';
 
-// ============================================================================
-// 2. BACKEND HANDLERS (Create, Update, Delete)
-// ============================================================================
-
-// Save or Update Student
 if (isset($_POST['save_student'])) {
     $first_name = $_POST['first_name'];
     $last_name  = $_POST['last_name'];
@@ -26,7 +20,6 @@ if (isset($_POST['save_student'])) {
     exit;
 }
 
-// Delete Student
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM students WHERE student_id = ?");
     $stmt->execute([$_GET['delete']]);
@@ -34,23 +27,14 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ============================================================================
-// 3. FETCH DATA
-// ============================================================================
-
-// Fetch student details if editing
 $edit_student = isset($_GET['edit']) ? $pdo->prepare("SELECT * FROM students WHERE student_id = ?") : null;
 if ($edit_student) { 
     $edit_student->execute([$_GET['edit']]); 
     $edit_student = $edit_student->fetch(); 
 }
 
-// Fetch all students
 $students = $pdo->query("SELECT * FROM students ORDER BY student_id DESC")->fetchAll();
 
-// ----------------------------------------------------------------------------
-// 4. INCLUDE THE HEADER HERE (Navigation + Live Search Bar)
-// ----------------------------------------------------------------------------
 include 'header.php';
 ?>
 
@@ -67,17 +51,14 @@ include 'header.php';
         <label>First Name:</label>
         <input type="text" name="first_name" value="<?= $edit_student['first_name'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Last Name:</label>
         <input type="text" name="last_name" value="<?= $edit_student['last_name'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Date of Birth:</label>
         <input type="date" name="dob" value="<?= $edit_student['dob'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Gender:</label>
         <select name="gender" required>
@@ -87,27 +68,28 @@ include 'header.php';
             <option value="Other" <?= (isset($edit_student['gender']) && $edit_student['gender'] == 'Other') ? 'selected' : '' ?>>Other</option>
         </select>
     </p>
-
     <p>
         <label>Medical Notes / Special Information:</label>
         <textarea name="medical_notes"><?= $edit_student['medical_notes'] ?? '' ?></textarea>
     </p>
-
     <p>
         <button type="submit" name="save_student"><?= $edit_student ? 'Update Student' : 'Add Student' ?></button>
     </p>
 </form>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+    <h3>Students List</h3>
+    <div style="display: flex; gap: 6px;">
+        <a href="db_tools.php?action=export_data&table=students" class="btn-tool btn-tool-export">export student</a>
+        <a href="db_tools.php?action=export_data&table=all" class="btn-tool btn-tool-export">export all fields</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import Students Data', 'students')">import student</button>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import All Database Data', 'all')">import all fields</button>
+    </div>
+</div>
+
 <table>
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>DOB</th>
-            <th>Gender</th>
-            <th>Medical Notes</th>
-            <th>Actions</th>
-        </tr>
+        <tr><th>ID</th><th>Name</th><th>DOB</th><th>Gender</th><th>Medical Notes</th><th>Actions</th></tr>
     </thead>
     <tbody>
         <?php foreach ($students as $s): ?>

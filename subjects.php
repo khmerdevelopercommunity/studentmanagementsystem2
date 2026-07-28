@@ -1,12 +1,6 @@
 <?php
-// 1. Connect to Database
 require_once 'db.php';
 
-// ============================================================================
-// 2. BACKEND HANDLERS (Create, Update, Delete)
-// ============================================================================
-
-// Save or Update Subject
 if (isset($_POST['save_subject'])) {
     $name = $_POST['subject_name'];
     $desc = $_POST['description'];
@@ -23,7 +17,6 @@ if (isset($_POST['save_subject'])) {
     exit;
 }
 
-// Delete Subject
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM subjects WHERE subject_id = ?");
     $stmt->execute([$_GET['delete']]);
@@ -31,23 +24,14 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ============================================================================
-// 3. FETCH DATA
-// ============================================================================
-
-// Fetch subject details if editing
 $edit_subject = isset($_GET['edit']) ? $pdo->prepare("SELECT * FROM subjects WHERE subject_id = ?") : null;
 if ($edit_subject) { 
     $edit_subject->execute([$_GET['edit']]); 
     $edit_subject = $edit_subject->fetch(); 
 }
 
-// Fetch all subjects
 $subjects = $pdo->query("SELECT * FROM subjects ORDER BY subject_id DESC")->fetchAll();
 
-// ----------------------------------------------------------------------------
-// 4. INCLUDE THE HEADER HERE (Navigation + Live Search Bar)
-// ----------------------------------------------------------------------------
 include 'header.php';
 ?>
 
@@ -64,25 +48,28 @@ include 'header.php';
         <label>Subject Name:</label>
         <input type="text" name="subject_name" value="<?= $edit_subject['subject_name'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Description:</label>
         <textarea name="description"><?= $edit_subject['description'] ?? '' ?></textarea>
     </p>
-
     <p>
         <button type="submit" name="save_subject"><?= $edit_subject ? 'Update Subject' : 'Add Subject' ?></button>
     </p>
 </form>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+    <h3>Subjects List</h3>
+    <div style="display: flex; gap: 6px;">
+        <a href="db_tools.php?action=export_data&table=subjects" class="btn-tool btn-tool-export">export subject</a>
+        <a href="db_tools.php?action=export_data&table=all" class="btn-tool btn-tool-export">export all fields</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import Subjects Data', 'subjects')">import subject</button>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import All Database Data', 'all')">import all fields</button>
+    </div>
+</div>
+
 <table>
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Subject Name</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
+        <tr><th>ID</th><th>Subject Name</th><th>Description</th><th>Actions</th></tr>
     </thead>
     <tbody>
         <?php foreach ($subjects as $sub): ?>

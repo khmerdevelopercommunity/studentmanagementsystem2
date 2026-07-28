@@ -1,10 +1,5 @@
 <?php
-// 1. Connect to Database
 require_once 'db.php';
-
-// ============================================================================
-// 2. BACKEND HANDLERS (Create, Update, Delete)
-// ============================================================================
 
 // Save or Update Teacher
 if (isset($_POST['save_teacher'])) {
@@ -33,23 +28,15 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ============================================================================
-// 3. FETCH DATA
-// ============================================================================
-
-// Fetch teacher details if editing
+// Fetch edit data
 $edit_teacher = isset($_GET['edit']) ? $pdo->prepare("SELECT * FROM teachers WHERE teacher_id = ?") : null;
 if ($edit_teacher) { 
     $edit_teacher->execute([$_GET['edit']]); 
     $edit_teacher = $edit_teacher->fetch(); 
 }
 
-// Fetch all teachers
 $teachers = $pdo->query("SELECT * FROM teachers ORDER BY teacher_id DESC")->fetchAll();
 
-// ----------------------------------------------------------------------------
-// 4. INCLUDE THE HEADER HERE (Navigation + Live Search Bar)
-// ----------------------------------------------------------------------------
 include 'header.php';
 ?>
 
@@ -66,36 +53,36 @@ include 'header.php';
         <label>First Name:</label>
         <input type="text" name="first_name" value="<?= $edit_teacher['first_name'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Last Name:</label>
         <input type="text" name="last_name" value="<?= $edit_teacher['last_name'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Email:</label>
         <input type="email" name="email" value="<?= $edit_teacher['email'] ?? '' ?>" required>
     </p>
-
     <p>
         <label>Phone:</label>
         <input type="text" name="phone" value="<?= $edit_teacher['phone'] ?? '' ?>">
     </p>
-
     <p>
         <button type="submit" name="save_teacher"><?= $edit_teacher ? 'Update Teacher' : 'Add Teacher' ?></button>
     </p>
 </form>
 
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+    <h3>Teachers List</h3>
+    <div style="display: flex; gap: 6px;">
+        <a href="db_tools.php?action=export_data&table=teachers" class="btn-tool btn-tool-export">export teacher</a>
+        <a href="db_tools.php?action=export_data&table=all" class="btn-tool btn-tool-export">export all fields</a>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import Teachers Data', 'teachers')">import teacher</button>
+        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal('Import All Database Data', 'all')">import all fields</button>
+    </div>
+</div>
+
 <table>
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Actions</th>
-        </tr>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Actions</th></tr>
     </thead>
     <tbody>
         <?php foreach ($teachers as $t): ?>

@@ -37,18 +37,15 @@
             </form>
             <div id="live-search-results"></div>
         </div>
-
-        <a href="db_tools.php?action=export_schema" class="btn-tool btn-tool-export" title="Export Structure Only">Export Schema</a>
-        <a href="db_tools.php?action=export_data" class="btn-tool btn-tool-export" title="Export Rows Only">Export Data</a>
-        <button type="button" class="btn-tool btn-tool-import" onclick="openImportModal()">Import Data</button>
     </div>
 </nav>
 
 <div id="importModal" class="modal-overlay">
     <div class="modal-box">
-        <h3>Import SQL File</h3>
-        <p style="font-size: 12px; color: #718096;">Select a <code>.sql</code> file to restore structure or data:</p>
+        <h3 id="importModalTitle">Import SQL File</h3>
+        <p style="font-size: 12px; color: #718096;">Select a <code>.sql</code> file to restore data:</p>
         <form action="db_tools.php?action=import" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="table_target" id="importTableTarget" value="all">
             <input type="file" name="sql_file" accept=".sql" required style="margin-bottom: 15px; width: 100%;">
             <div style="text-align: right;">
                 <button type="button" onclick="closeImportModal()" class="btn-tool">Cancel</button>
@@ -59,7 +56,9 @@
 </div>
 
 <script>
-function openImportModal() {
+function openImportModal(titleText, targetTable) {
+    document.getElementById('importModalTitle').innerText = titleText;
+    document.getElementById('importTableTarget').value = targetTable;
     document.getElementById('importModal').style.display = 'flex';
 }
 

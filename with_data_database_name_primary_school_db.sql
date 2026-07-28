@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 28, 2026 at 03:31 PM
+-- Generation Time: Jul 28, 2026 at 04:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `attendance` (
   `remarks` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `attendance`
+--
+
+INSERT INTO `attendance` (`attendance_id`, `enrollment_id`, `date`, `status`, `remarks`) VALUES
+(1, 1, '2026-07-28', 'Present', 'On time');
+
 -- --------------------------------------------------------
 
 --
@@ -54,7 +61,7 @@ CREATE TABLE `classes` (
 --
 
 INSERT INTO `classes` (`class_id`, `grade_level`, `section`, `academic_year`, `homeroom_teacher_id`) VALUES
-(1, 1, 'A', '2026-2027', NULL);
+(1, 1, 'A', '2026-2027', 1);
 
 -- --------------------------------------------------------
 
@@ -93,6 +100,13 @@ CREATE TABLE `grades` (
   `recorded_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `grades`
+--
+
+INSERT INTO `grades` (`grade_id`, `enrollment_id`, `subject_id`, `term`, `score`, `letter_grade`, `teacher_comments`, `recorded_at`) VALUES
+(1, 1, 1, 'Term 1', 95.50, 'A', 'Excellent performance in math!', '2026-07-28 14:04:49');
+
 -- --------------------------------------------------------
 
 --
@@ -108,6 +122,13 @@ CREATE TABLE `guardians` (
   `email` varchar(100) DEFAULT NULL,
   `address` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `guardians`
+--
+
+INSERT INTO `guardians` (`guardian_id`, `first_name`, `last_name`, `relationship`, `phone`, `email`, `address`) VALUES
+(1, 'Robert', 'Smith', 'Father', '0987654321', 'r.smith@email.com', '123 Main Street, Suite 4B');
 
 -- --------------------------------------------------------
 
@@ -131,7 +152,16 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `first_name`, `last_name`, `dob`, `gender`, `admission_date`, `medical_notes`, `is_active`) VALUES
-(1, 'stu', 'dent', '2000-01-01', 'Male', '2026-07-27', 'medical', 1);
+(1, 'Liam', 'Smith', '2019-03-12', 'Male', '2026-07-27', 'None', 1),
+(2, 'Olivia', 'Williams', '2019-05-22', 'Female', '2026-07-27', 'Mild peanut allergy', 1),
+(3, 'Noah', 'Brown', '2019-01-10', 'Male', '2026-07-27', 'None', 1),
+(4, 'Emma', 'Jones', '2019-08-14', 'Female', '2026-07-27', 'Wears reading glasses', 1),
+(5, 'Oliver', 'Garcia', '2019-11-03', 'Male', '2026-07-27', 'Asthma inhaler required', 1),
+(6, 'Ava', 'Miller', '2019-02-19', 'Female', '2026-07-27', 'None', 1),
+(7, 'Elijah', 'Davis', '2019-07-25', 'Male', '2026-07-27', 'Lactose intolerant', 1),
+(8, 'Sophia', 'Rodriguez', '2019-09-09', 'Female', '2026-07-27', 'None', 1),
+(9, 'James', 'Martinez', '2019-12-01', 'Male', '2026-07-27', 'None', 1),
+(10, 'Isabella', 'Hernandez', '2019-04-18', 'Female', '2026-07-27', 'None', 1);
 
 -- --------------------------------------------------------
 
@@ -144,6 +174,13 @@ CREATE TABLE `student_guardians` (
   `guardian_id` int(11) NOT NULL,
   `is_primary_contact` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `student_guardians`
+--
+
+INSERT INTO `student_guardians` (`student_id`, `guardian_id`, `is_primary_contact`) VALUES
+(1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -162,7 +199,7 @@ CREATE TABLE `subjects` (
 --
 
 INSERT INTO `subjects` (`subject_id`, `subject_name`, `description`) VALUES
-(1, 'sub ject', 'subject');
+(1, 'Mathematics', 'Primary grade mathematics and basic arithmetic.');
 
 -- --------------------------------------------------------
 
@@ -184,7 +221,7 @@ CREATE TABLE `teachers` (
 --
 
 INSERT INTO `teachers` (`teacher_id`, `first_name`, `last_name`, `email`, `phone`, `hire_date`) VALUES
-(1, 'tea ', 'cher', 'teacher@gmail.com', '00000000000', '2026-07-27');
+(1, 'Sarah', 'Johnson', 's.johnson@school.edu', '0123456789', '2026-07-27');
 
 --
 -- Indexes for dumped tables
@@ -264,7 +301,7 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `classes`
@@ -282,19 +319,19 @@ ALTER TABLE `enrollments`
 -- AUTO_INCREMENT for table `grades`
 --
 ALTER TABLE `grades`
-  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `guardians`
 --
 ALTER TABLE `guardians`
-  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `guardian_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `subjects`

@@ -17,5 +17,5 @@ and then import 'database_with_data_name_primary_school_db.sql'
 
 enjoy!
 
-2. use real server for this I test on 
+2. you can use on real server I recommend infinityfree.com
 

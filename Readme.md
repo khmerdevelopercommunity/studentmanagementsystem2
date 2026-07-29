@@ -1,6 +1,6 @@
 # studentmanagementsystem2
 
-1. on local host use xampp 
+on local host use xampp 
 
 install xampp start server apache and mysql
 

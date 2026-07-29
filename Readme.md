@@ -1,4 +1,7 @@
 # studentmanagementsystem2
+
+1. on local host use xampp 
+
 install xampp start server apache and mysql
 
 there are two way with and without data
@@ -13,3 +16,6 @@ you just go to localhost/phpmyadmin -> sql and paste code in github name:
 and then import 'database_with_data_name_primary_school_db.sql'
 
 enjoy!
+
+2. use real server for this I test on 
+
